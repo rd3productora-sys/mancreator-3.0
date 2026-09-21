@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MANCREATOR 2.0</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #111; color: #fff; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .chat { width: 100%; max-width: 700px; height: 90vh; background: #1c1c1c; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; }
+    .header { padding: 20px; background: #000; font-size: 24px; font-weight: bold; text-align: center; }
+    #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    .message { padding: 12px 15px; border-radius: 10px; max-width: 85%; line-height: 1.4; font-size: 15px; }
+    .user { margin-left: auto; background: #2563eb; color: #fff; }
+    .assistant { margin-right: auto; background: #262626; color: #fff; }
+    .form { display: flex; padding: 15px; gap: 10px; background: #000; }
+    #input { flex: 1; padding: 14px; border: none; border-radius: 8px; font-size: 16px; background: #222; color: #fff; }
+    #input:focus { outline: none; border: 1px solid #3b82f6; }
+    button { padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #3b82f6; color: #fff; transition: background 0.2s; }
+    button:hover { background: #2563eb; }
+  </style>
+</head>
+<body>
+  <div class="chat">
+    <div class="header">MANCREATOR 2.0</div>
+    <div id="messages">
+      <div class="message assistant">¡Hola! Mancreator 2.0 está conectado y listo. ¿Qué licitaciones o proyectos revisamos hoy?</div>
+    </div>
+    <form class="form" id="form">
+      <input id="input" type="text" placeholder="Escribe tu consulta sobre licitaciones, clientes o producción..." autocomplete="off">
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const messages = document.getElementById("messages");
+
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+
+      addMessage(message, "user");
+      input.value = "";
+
+      const loadingId = 'loading-' + Date.now();
+      const loadingDiv = document.createElement("div");
+      loadingDiv.className = "message assistant";
+      loadingDiv.id = loadingId;
+      loadingDiv.textContent = "Analizando estrategia...";
+      messages.appendChild(loadingDiv);
+      messages.scrollTop = messages.scrollHeight;
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+        document.getElementById(loadingId).remove();
+
+        if (data.reply) {
+          addMessage(data.reply, "assistant");
+        } else {
+          addMessage("No se recibió respuesta de la IA.", "assistant");
+        }
+      } catch (error) {
+        document.getElementById(loadingId).remove();
+        addMessage("Error de conexión con el servidor.", "assistant");
+      }
+    });
+  </script>
+</body>
+</html>
