@@ -15,23 +15,14 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ reply: "Por favor escribe un mensaje." });
         }
 
-        let response;
-        try {
-            // Intentamos primero con el modelo estándar actual
-            response = await ai.models.generateContent({
-                model: 'gemini-1.5-flash',
-                contents: userMessage,
-                config: {
-                    systemInstruction: "Eres M. A. Navarrete (Miguel Ángel Navarrete), asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
-                }
-            });
-        } catch (err1) {
-            // Si falla, intentamos como alternativa con el modelo base
-            response = await ai.models.generateContent({
-                model: 'gemini-pro',
-                contents: userMessage
-            });
-        }
+        // Usamos directamente el modelo que sí funciona y responde perfecto
+        const response = await ai.models.generateContent({
+            model: 'gemini-1.5-flash',
+            contents: userMessage,
+            config: {
+                systemInstruction: "Eres M. A. Navarrete (Miguel Ángel Navarrete), asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
+            }
+        });
 
         res.json({ reply: response.text });
 
