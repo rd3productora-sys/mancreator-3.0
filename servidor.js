@@ -6,13 +6,13 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Inicialización directa y segura utilizando tu clave API
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'PEGA_AQUI_TU_API_KEY_SI_PREFIERES' });
+// Reemplaza 'PEGA_AQUI_TU_API_KEY' por tu clave real de Gemini entre comillas si la prefieres fija
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'PEGA_AQUI_TU_API_KEY' });
 
 app.post('/api/chat', async (req, res) => {
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash',
             contents: req.body.message,
             config: {
                 systemInstruction: "Eres M. A. Navarrete (Miguel Ángel Navarrete), asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
@@ -20,8 +20,8 @@ app.post('/api/chat', async (req, res) => {
         });
         res.json({ reply: response.text });
     } catch (error) {
-        console.error("Error detallado:", error);
-        res.status(500).json({ reply: "Error de conexión con la IA. Verifica que la API Key sea correcta." });
+        console.error("Error detallado de IA:", error);
+        res.status(500).json({ reply: "Error de conexión con la IA. Verifica que tu API Key sea válida." });
     }
 });
 
