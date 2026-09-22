@@ -6,28 +6,37 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Inicializamos la IA pasando tu clave directamente (reemplaza 'TU_API_KEY_AQUI' por tu clave real si no usas variable de entorno)
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'TU_API_KEY_AQUI' });
+// Inicializamos el cliente de la IA de forma oficial
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'PEGA_AQUI_TU_API_KEY_SI_LA_USAS_FIJA' });
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const userMessage = req.body.message || "Hola";
-        
+        const userMessage = req.body.message;
+        if (!userMessage) {
+            return res.status(400).json({ reply: "Por favor escribe un mensaje." });
+        }
+
+        // Llamada correcta a la API oficial de @google/genai
         const response = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
-            contents: userMessage,
+            contents: [
+                {
+                    role: 'user',
+                    parts: [{ text: userMessage }]
+                }
+            ],
             config: {
                 systemInstruction: "Eres M. A. Navarrete (Miguel Ángel Navarrete), asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
             }
         });
 
-        // Aseguramos capturar la respuesta correctamente según la estructura del SDK
-        const replyText = response.text || (response.candidates && response.candidates[0]?.content?.parts[0]?.text) || "Respuesta generada con éxito.";
-        
+        // Extraemos la respuesta de manera segura
+        const replyText = response.text || "Respuesta generada correctamente.";
         res.json({ reply: replyText });
+
     } catch (error) {
-        console.error("Error completo en el servidor:", error);
-        res.status(500).json({ reply: "Error al conectar con Gemini: " + error.message });
+        console.error("Error detallado al conectar con Gemini:", error);
+        res.status(500).json({ reply: "Error de conexión con la IA. Revisa la consola del servidor." });
     }
 });
 
