@@ -6,7 +6,8 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const ai = new GoogleGenAI({ apiKey: 'AIzaSyDTp8p_q51p62wPzQZgY54Z_xxxxxxx' });
+// Inicialización directa y segura utilizando tu clave API
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'PEGA_AQUI_TU_API_KEY_SI_PREFIERES' });
 
 app.post('/api/chat', async (req, res) => {
     try {
@@ -19,7 +20,8 @@ app.post('/api/chat', async (req, res) => {
         });
         res.json({ reply: response.text });
     } catch (error) {
-        res.status(500).json({ reply: "Error de conexión con la IA. Revisa la API Key." });
+        console.error("Error detallado:", error);
+        res.status(500).json({ reply: "Error de conexión con la IA. Verifica que la API Key sea correcta." });
     }
 });
 
