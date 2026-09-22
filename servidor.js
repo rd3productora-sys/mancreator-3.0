@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: 'AIzaSyDTp8p_q51p62wPzQZgY54Z_xxxxxxx' });
 
 app.post('/api/chat', async (req, res) => {
     try {
@@ -14,12 +14,12 @@ app.post('/api/chat', async (req, res) => {
             model: 'gemini-2.5-flash',
             contents: req.body.message,
             config: {
-                systemInstruction: "Eres Mancreator 2.0, asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
+                systemInstruction: "Eres M. A. Navarrete (Miguel Ángel Navarrete), asistente experto en producción de televisión, eventos y licitaciones públicas en Chile. Ayudas a estructurar propuestas, evitar errores administrativos fatales y organizar proyectos como Kidsabadá y El Canal Feliz."
             }
         });
         res.json({ reply: response.text });
     } catch (error) {
-        res.status(500).json({ reply: "Error de conexión con la IA. Revisa la API Key en Render." });
+        res.status(500).json({ reply: "Error de conexión con la IA. Revisa la API Key." });
     }
 });
 
