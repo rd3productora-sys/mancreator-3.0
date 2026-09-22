@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Inicializamos el cliente de la IA de forma oficial
+// Inicializamos el cliente de la IA
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'PEGA_AQUI_TU_API_KEY_SI_LA_USAS_FIJA' });
 
 app.post('/api/chat', async (req, res) => {
@@ -16,9 +16,9 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ reply: "Por favor escribe un mensaje." });
         }
 
-        // Llamada correcta a la API oficial de @google/genai
+        // Usamos el modelo exacto que solicita Google en el mensaje de error
         const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash',
+            model: 'gemini-3.6-flash',
             contents: [
                 {
                     role: 'user',
@@ -30,13 +30,12 @@ app.post('/api/chat', async (req, res) => {
             }
         });
 
-        // Extraemos la respuesta de manera segura
         const replyText = response.text || "Respuesta generada correctamente.";
         res.json({ reply: replyText });
 
     } catch (error) {
         console.error("Error detallado al conectar con Gemini:", error);
-        res.status(500).json({ reply: "Error de conexión con la IA. Revisa la consola del servidor." });
+        res.status(500).json({ reply: "Error al conectar con Gemini: " + error.message });
     }
 });
 
