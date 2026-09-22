@@ -1,0 +1,15 @@
+{
+  "name": "mancreator-3.0",
+  "version": "1.0.0",
+  "main": "servidor.js",
+  "scripts": {
+    "start": "node servidor.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "@google/genai": "^0.1.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
